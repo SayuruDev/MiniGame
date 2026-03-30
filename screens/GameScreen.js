@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import NumberContainer from '../components/game/NumberContainer';
 import Card from '../components/ui/Card';
@@ -37,7 +38,7 @@ function GameScreen({ userNumber, onGameOver }) {
       (direction === 'greater' && currentGuess > userNumber)
     ) {
       Alert.alert("Don't lie!", 'You know that this is wrong...', [
-        { text: 'Sorry!', style: 'cancel' },
+        { text: 'Sorry!', style: 'cancel' }
       ]);
       return;
     }
@@ -67,12 +68,12 @@ function GameScreen({ userNumber, onGameOver }) {
         <View style={styles.buttonsContainer}>
           <View style={styles.buttonContainer}>
             <PrimaryButton onPress={nextGuessHandler.bind(this, 'lower')}>
-              -
+              <Ionicons name='remove' size={24} color='white' />
             </PrimaryButton>
           </View>
           <View style={styles.buttonContainer}>
             <PrimaryButton onPress={nextGuessHandler.bind(this, 'greater')}>
-              +
+              <Ionicons name='add' size={24} color='white' />
             </PrimaryButton>
           </View>
         </View>
@@ -87,15 +88,15 @@ export default GameScreen;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    padding: 24,
+    padding: 24
   },
   instructionText: {
-    marginBottom: 12,
+    marginBottom: 12
   },
   buttonsContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row'
   },
   buttonContainer: {
-    flex: 1,
-  },
+    flex: 1
+  }
 });
