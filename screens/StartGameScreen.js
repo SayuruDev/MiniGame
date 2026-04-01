@@ -1,91 +1,111 @@
+import { useState } from 'react';
 import {
+  TextInput,
   View,
-  Image,
-  Text,
-  ScrollView,
   StyleSheet,
+  Alert,
   useWindowDimensions,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 
-import Title from '../components/ui/Title';
 import PrimaryButton from '../components/ui/PrimaryButton';
+import Title from '../components/ui/Title';
 import Colors from '../constants/colors';
+import Card from '../components/ui/Card';
+import InstructionText from '../components/ui/InstructionText';
 
-function GameOverScreen({ roundsNumber, userNumber, onStartNewGame }) {
+function StartGameScreen({ onPickNumber }) {
+  const [enteredNumber, setEnteredNumber] = useState('');
+
   const { width, height } = useWindowDimensions();
 
-  let imageSize = 300;
-
-  if (width < 380) {
-    imageSize = 150;
+  function numberInputHandler(enteredText) {
+    setEnteredNumber(enteredText);
   }
 
-  if (height < 400) {
-    imageSize = 80;
+  function resetInputHandler() {
+    setEnteredNumber('');
   }
 
-  const imageStyle = {
-    width: imageSize,
-    height: imageSize,
-    borderRadius: imageSize / 2,
-  };
+  function confirmInputHandler() {
+    const chosenNumber = parseInt(enteredNumber);
+
+    if (isNaN(chosenNumber) || chosenNumber <= 0 || chosenNumber > 99) {
+      Alert.alert(
+        'Invalid number!',
+        'Number has to be a number between 1 and 99.',
+        [{ text: 'Okay', style: 'destructive', onPress: resetInputHandler }]
+      );
+      return;
+    }
+
+    onPickNumber(chosenNumber);
+  }
+
+  const marginTopDistance = height < 380 ? 30 : 100;
 
   return (
     <ScrollView style={styles.screen}>
-      <View style={styles.rootContainer}>
-        <Title>GAME OVER!</Title>
-        <View style={[styles.imageContainer, imageStyle]}>
-          <Image
-            style={styles.image}
-            source={require('../assets/images/success.png')}
-          />
+      <KeyboardAvoidingView style={styles.screen} behavior="position">
+        <View style={[styles.rootContainer, { marginTop: marginTopDistance }]}>
+          <Title>Guess My Number</Title>
+          <Card>
+            <InstructionText>Enter a Number</InstructionText>
+            <TextInput
+              style={styles.numberInput}
+              maxLength={2}
+              keyboardType="number-pad"
+              autoCapitalize="none"
+              autoCorrect={false}
+              onChangeText={numberInputHandler}
+              value={enteredNumber}
+            />
+            <View style={styles.buttonsContainer}>
+              <View style={styles.buttonContainer}>
+                <PrimaryButton onPress={resetInputHandler}>Reset</PrimaryButton>
+              </View>
+              <View style={styles.buttonContainer}>
+                <PrimaryButton onPress={confirmInputHandler}>
+                  Confirm
+                </PrimaryButton>
+              </View>
+            </View>
+          </Card>
         </View>
-        <Text style={styles.summaryText}>
-          Your phone needed <Text style={styles.highlight}>{roundsNumber}</Text>{' '}
-          rounds to guess the number{' '}
-          <Text style={styles.highlight}>{userNumber}</Text>.
-        </Text>
-        <PrimaryButton onPress={onStartNewGame}>Start New Game</PrimaryButton>
-      </View>
+      </KeyboardAvoidingView>
     </ScrollView>
   );
 }
 
-export default GameOverScreen;
+export default StartGameScreen;
 
-// const deviceWidth = Dimensions.get('window').width;
+// const deviceHeight = Dimensions.get('window').height;
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1
+    flex: 1,
   },
   rootContainer: {
     flex: 1,
-    padding: 24,
-    justifyContent: 'center',
+    // marginTop: deviceHeight < 380 ? 30 : 100,
     alignItems: 'center',
   },
-  imageContainer: {
-    // width: deviceWidth < 380 ? 150 : 300,
-    // height: deviceWidth < 380 ? 150 : 300,
-    // borderRadius: deviceWidth < 380 ? 75 : 150,
-    borderWidth: 3,
-    borderColor: Colors.primary800,
-    overflow: 'hidden',
-    margin: 36,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-  summaryText: {
-    fontFamily: 'open-sans',
-    fontSize: 24,
+  numberInput: {
+    height: 50,
+    width: 50,
+    fontSize: 32,
+    borderBottomColor: Colors.accent500,
+    borderBottomWidth: 2,
+    color: Colors.accent500,
+    marginVertical: 8,
+    fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 24,
   },
-  highlight: {
-    fontFamily: 'open-sans-bold',
-    color: Colors.primary500,
+  buttonsContainer: {
+    flexDirection: 'row',
+  },
+  buttonContainer: {
+    flex: 1,
   },
 });
